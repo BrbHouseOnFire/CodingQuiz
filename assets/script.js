@@ -5,24 +5,24 @@
 // Var Setup
 var questions = [
     {
-        question: "this is the question's text",
+        question: "question 1",
         choices: ["this is choice 1", "this is choice 2", "*this is choice 3", "this is choice 4"],
-        answer: "3"
-    },
-    {
-        question: "this is the question's text",
-        choices: ["this is choice 1", "this is choice 2", "this is choice 3", "*this is choice 4"],
-        answer: "4"
-    },
-    {
-        question: "this is the question's text",
-        choices: ["this is choice 1", "*this is choice 2", "this is choice 3", "this is choice 4"],
         answer: "2"
     },
     {
-        question: "this is the question's text",
-        choices: ["*this is choice 1", "this is choice 2", "this is choice 3", "this is choice 4"],
+        question: "question 2",
+        choices: ["this is choice 1", "this is choice 2", "this is choice 3", "*this is choice 4"],
+        answer: "3"
+    },
+    {
+        question: "question 3",
+        choices: ["this is choice 1", "*this is choice 2", "this is choice 3", "this is choice 4"],
         answer: "1"
+    },
+    {
+        question: "question 4",
+        choices: ["*this is choice 1", "this is choice 2", "this is choice 3", "this is choice 4"],
+        answer: "0"
     }
 ];
 var score = 0;
@@ -32,6 +32,7 @@ var timeLeft = 0;
 var isCorrect = false;
 var userSelection = -1;
 var currentQuestion = 0;
+var timeScore = -1;
 
 // init
 renderStartPage();
@@ -47,31 +48,48 @@ function td() {
 function runQuiz() {
     // set initial quiz state
     currentQuestion = 0;
-    // reset score
     score = 0;
+    answered = false;
+    isCorrect = false;
+    timeScore = -1;
+    clearPage();
+    renderQuestion(currentQuestion);
     // enable timer
     timeLeft = questions.length * 20;
+    // timeLeft = 25;
+    runTimer();
+    nextQuestion(currentQuestion);
+}
+
+
+
+function runTimer() {
     var timerInterval = setInterval(function() {
         timeLeft--;
+        console.log("time:" + timeLeft);
+        $("#timerID").text(`Time Left: ${timeLeft}`);
+        if(timeLeft <= 0) {
+            clearInterval(timerInterval);
+            endQuiz();
+        }
     }, 1000);
-    
+}
+
+function endQuiz() {
+    if (timeScore <= 0) {
+        timeScore = 0;
+    }
+    clearPage();
+    renderScoreSubmissionPage();
+}
+
+
+
+function nextQuestion(currentQuestion) {
     answered = false;
     isCorrect = false;
     clearPage();
     renderQuestion(currentQuestion);
-
-    
-    if(timeLeft <= 0) {
-        clearInterval(timerInterval);
-        i = questions.length;
-    }
-
-
-
-
-
-
-
 }
 
 function renderQuestion(index) {
@@ -97,10 +115,11 @@ function createAButton(questionNumber, choicesIndex) {
     // returns a customized button based on the given question
     var buttonText = questions[questionNumber].choices[choicesIndex];
     var correctQ = false;
-    if (questions[questionNumber].answer === choicesIndex) {
+    // double == instead of triple for different typecasting.
+    if (questions[questionNumber].answer == choicesIndex) {
         correctQ = true;
     }
-    return newButton = `<button class="quizButton qbutton button--quiz" selection="${choicesIndex}" id="${questionNumber},${choicesIndex}" isCorrect="${correctQ}">${buttonText}</button>`;
+    return newButton = `<button class="quizButton qbutton" selection="${choicesIndex}" id="${questionNumber},${choicesIndex}" isCorrect="${correctQ}">${buttonText}</button>`;
 }
 
 function renderStartPage() {
@@ -109,9 +128,16 @@ function renderStartPage() {
     bodyContainer.append(`<button class="startButton button--start"
     id="sButton"><span>S</span><span>t</span><span>a</span><span>r</span><span>t</span>
     </button>`);
-
 }
 
+function renderScoreSubmissionPage() {
+    console.log("score: " + score);
+    console.log("timescore: " + timeScore);
+    console.log("timeleft: " + timeLeft);
+    $("#timerID").text(`Time Left: ${timeScore}`);
+
+    
+}
 
 function clearPage() {
     bodyContainer.empty();
@@ -127,22 +153,40 @@ function clearPage() {
 
 // click start quiz
 $("#sButton").on("click", function() {
+    event.stopPropagation();
+    event.stopImmediatePropagation();
     // clear out the start page
     clearPage();
     // begin the quiz!
     runQuiz();
 });
 
-$(".quizButton").on("click", function() {
+$("#bodyContainer").on("click", ".quizButton", function() {
+    event.stopPropagation();
+    event.stopImmediatePropagation();
     // mark that they've chosen an answer
     answered = true;
     // save the answer they've chosen
-    userSelection = this.attr("selection");
-    console.log(userSelection);
-    td();
+    userSelection = $(this).attr("selection");
+    // check if answer is correct and mark as such
+    if ($(this).attr("iscorrect") === "true") {
+        isCorrect = true;
+        score++;
+    }
+    else {
+        isCorrect = false;
+        timeLeft -= 15;
+    }
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+        nextQuestion(currentQuestion);
+    }
+    else {
+        timeScore = timeLeft;
+        timeLeft = 0;
+    }
 });
 
-// choose answer
 
 
 // enter initials and submit score, go to HS
@@ -153,17 +197,6 @@ $(".quizButton").on("click", function() {
 // -------------------------------------------------------------------
 
 
-// Random Useful data
-    // $(document).ready(function() {
-    //     $('#random-button').on('click', function() {
-    //       var randstring = "";
-    //       for (var i = 0; i < 9; i++) {
-    //         randstring = randstring + Math.floor(Math.random() * 10);
-    //       }
-    //       $('#random-number').prepend(`<h1 class="text-center">${randstring}</h1>`);
-    //     })
-    //     // ...
-    //   });
 
 
 

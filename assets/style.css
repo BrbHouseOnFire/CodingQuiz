@@ -42,6 +42,19 @@
     width: 90vw;
     margin: 5vh 5vw;
 }
+.header {
+	width: 75vw;
+    cursor: default;
+}
+.highScores {
+	text-align: center;
+	width: 10vw;
+	font-size: calc(1vh + 1vw);
+    background-color: whitesmoke;
+    padding: 0.5vh 0.5vw;
+    border-radius: calc(0.5vh + 0.5vw);
+	cursor: pointer;
+}
 .mainheader {
     font-size: calc(3vh + 3vw);
     font-weight: 600;
@@ -52,6 +65,12 @@
     margin-bottom: 7.5vh;
     cursor: default;
 }
+.pageTimer {
+	text-align: center;
+	width: 10vw;
+    font-size: calc(1vh + 1vw);
+}
+
 .bodycontainer {
     background-color: whitesmoke;
     width: 75vw;

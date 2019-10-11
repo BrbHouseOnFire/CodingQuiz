@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Password Generator</title>
+    <title>CodingQuiz</title>
     <link rel="stylesheet" type="text/css" href="./assets/normalize.css">
     <link rel="stylesheet" type="text/css" href="./assets/style.css">
 </head>
-
 
 
 <body class="webbackground">
@@ -20,19 +19,9 @@
         <div class = "mainheader">Impossible Quiz</div>
 
     <!-- Content -->
-        <div class = "bodycontainer flex column jcsa aic">
-        <!-- div1 - landing page -->
-            <!-- body text -->
-            <div id="bodyText" class="bodytext">
-                    Nobody passes this quiz. Nobody!
-                </div>
-            <!-- button to start quiz -->
-            <div class = "buttoncontainer flex jcsa">
-            <button onclick="generate()" class="button button--styling button--text-thick button--text-upper button--size-s button--border-thick">
-                    <span>S</span><span>t</span><span>a</span><span>r</span><span>t</span>
-                </button>
-            </div>
-        </div>
+        <div class = "bodycontainer flex column jcsa aic" id="bodyContainer"></div>
+
+        
         
     <!-- Content 2 -->
     <!-- <div class = "bodycontainer flex column jcsa aic"> -->
@@ -44,7 +33,7 @@
         <!-- div3 - High scores -->
             <!-- replace with high scores -->
             <!-- <div></div> -->
-
+        
 
 
     </div>
@@ -54,8 +43,8 @@
 
 
 
-
-
-<!-- only enable javascript after page is fully loaded? -->
+<!-- jQuery Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Quiz Script -->
 <script src="./assets/script.js"></script>
 </html>

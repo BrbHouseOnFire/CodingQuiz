@@ -5,24 +5,39 @@
 // Var Setup
 var questions = [
     {
-        question: "question 1",
-        choices: ["this is choice 1", "this is choice 2", "*this is choice 3", "this is choice 4"],
-        answer: "2"
-    },
-    {
-        question: "question 2",
-        choices: ["this is choice 1", "this is choice 2", "this is choice 3", "*this is choice 4"],
+        question: "How many holes are in A Polo?",
+        choices: ["Elephant", "Two", "Three", "Four"],
         answer: "3"
     },
     {
-        question: "question 3",
-        choices: ["this is choice 1", "*this is choice 2", "this is choice 3", "this is choice 4"],
+        question: ".sdrawkcab noitseuq siht rewsnA",
+        choices: ["What?", "I don't Understand", "KO", "Elephant"],
+        answer: "2"
+    },
+    {
+        question: "Elephant.",
+        choices: ["A,C", "1,4", "Elephant?", "This quiz is dumb."],
         answer: "1"
     },
     {
-        question: "question 4",
-        choices: ["*this is choice 1", "this is choice 2", "this is choice 3", "this is choice 4"],
+        question: "What was the answer to question 2?",
+        choices: ["The last one", "^ That one", "^ That one", "^ That one"],
+        answer: "3"
+    },
+    {
+        question: "What question are we on?",
+        choices: ["Seven", "Six", "Five", "Four"],
+        answer: "2"
+    },
+    {
+        question: "What can you put in a bucket to make it lighter?",
+        choices: ["A Torch", "A sense of Humor", "A Hole", "An Elephant"],
         answer: "0"
+    },
+    {
+        question: "What do you call a wingless fly?",
+        choices: ["A poor turn of luck", "Elephant", "Ned", "A Walk"],
+        answer: "3"
     }
 ];
 var score = 0;
@@ -59,6 +74,7 @@ function setDefaultState() {
     timeScore = -1;
     scoreChart = [];
     nameInput = "";
+    $("#timerID").text(`Time Left: 0`);
 }
 
 function runQuiz() {
@@ -68,7 +84,6 @@ function runQuiz() {
     renderQuestion(currentQuestion);
     // enable timer
     timeLeft = questions.length * 20;
-    // timeLeft = 25;
     runTimer();
     nextQuestion(currentQuestion);
 }
@@ -88,7 +103,6 @@ function runTimer() {
             return;
         }
         timeLeft--;
-        console.log("time:" + timeLeft);
         $("#timerID").text(`Time Left: ${timeLeft}`);
         if(timeLeft <= 0) {
             clearInterval(timerInterval);
@@ -168,11 +182,11 @@ function renderScoreSubmissionPage() {
     // update timer to avoid negative on-screen.
     $("#timerID").text(`Time Left: ${timeScore}`);
     // update score to include remaining time
-    score = score + timeScore;
+    score = (10 * score) + timeScore;
     // display header
     bodyContainer.append(`<div id="bodyTextID" class="bodytext">Quiz Over!</div>`);
     // display user's score
-    bodyContainer.append(`<div id="bodyTextID" class="bodytext">Your score: ${score}</div>`);
+    bodyContainer.append(`<div id="bodyTextID" class="bodytext2">Your score: ${score}</div>`);
     // create a new form
     var newForm = $("<form>");
     newForm.attr("id", "newFormID");
@@ -194,14 +208,12 @@ function renderHighSchorePage() {
     clearPage();
     // display title
     bodyContainer.append(`<div id="bodyTextID" class="bodytext">High Scores!</div>`);
-
+    $("#timerID").text(`Time Left: 0`);
     // display high scores
     // get local storage
     var string = localStorage.getItem("highScores");
     var object = JSON.parse(string);
     scoreChart = object;
-    console.log("scoreChart: " + scoreChart);
-    console.log(scoreChart);
     // check if empty.
     if (string === null) {
         // if so, display: "no high scores yet"
@@ -209,12 +221,17 @@ function renderHighSchorePage() {
     }
     else {
         // else, display local storage results.
+        // UL to house scores
+        bodyContainer.append(`<ol id="scoreChart" class="scoreChart"></ol>`);
+        // for loop running through .length to generate and add LIs
         for(var i = 0; i < scoreChart.length; i++) {
-            bodyContainer.append(`<div id="score${i}" class="scoreChart flex"></div>`);
-            $(`#scoreChart${i}`).append();// unfinished
-            // UL to house scores
-            // for loop running through .length to generate and add LIs
-
+            // create LI
+            var newLi = $("<li>");
+            newLi.attr("id", `score${i}`)
+            newLi.addClass("scoreli")
+            newLi.text(`${scoreChart[i].name}: ${scoreChart[i].score}`)
+            // append LI
+            $(`#scoreChart`).append(newLi);
         }
 
     }
@@ -242,6 +259,13 @@ $("#highScoreButton").on("click", function() {
     timeLeft = "HS";
     renderHighSchorePage();
 });
+
+$("#bodyContainer").keypress(
+    function(event){
+      if (event.which == '13') {
+        event.preventDefault();
+      }
+  });
 
 // click start quiz
 $("#bodyContainer").on("click", "#sButton", function() {
@@ -315,6 +339,26 @@ $("#bodyContainer").on("click", "#saveButton", function() {
                 score: score
                 }
             );
+            // Sorts an array of objects based on score key value
+            function sorter(a, b){
+                var aScore = a.score;
+                var bScore = b.score;
+                if (aScore < bScore) {
+                    return -1;
+                }
+                else if (aScore > bScore) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+                // return ((aScore < bScore) ? -1 : ((aScore > bScore) ? 1 : 0));
+
+
+              }
+            // sort the scores into descending order
+            scoreChart.sort(sorter).reverse();
+
             localStorage.setItem("highScores", JSON.stringify(scoreChart));
         }
         // Goto High Score Page

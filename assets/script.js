@@ -47,13 +47,23 @@ function td() {
     alert("TOUCHDOWN! -takeabreak-");
 }
 
+function setDefaultState() {
+    // reset default state
+    score = 0;
+    bodyContainer = $("#bodyContainer");
+    answered = false;
+    timeLeft = 0;
+    isCorrect = false;
+    userSelection = -1;
+    currentQuestion = 0;
+    timeScore = -1;
+    scoreChart = [];
+    nameInput = "";
+}
+
 function runQuiz() {
     // set initial quiz state
-    currentQuestion = 0;
-    score = 0;
-    answered = false;
-    isCorrect = false;
-    timeScore = -1;
+    setDefaultState();
     clearPage();
     renderQuestion(currentQuestion);
     // enable timer
@@ -189,20 +199,32 @@ function renderHighSchorePage() {
     // get local storage
     var string = localStorage.getItem("highScores");
     var object = JSON.parse(string);
+    scoreChart = object;
+    console.log("scoreChart: " + scoreChart);
+    console.log(scoreChart);
     // check if empty.
     if (string === null) {
         // if so, display: "no high scores yet"
+        bodyContainer.append(`<div id="scoreChartID" class="scoreChart">No scores yet :(</div>`);
     }
     else {
         // else, display local storage results.
+        for(var i = 0; i < scoreChart.length; i++) {
+            bodyContainer.append(`<div id="score${i}" class="scoreChart flex"></div>`);
+            $(`#scoreChart${i}`).append();// unfinished
+            // UL to house scores
+            // for loop running through .length to generate and add LIs
+
+        }
+
     }
 
     // display retry button
     // display clear high scores button
-    bodyContainer.append(`<div class = "buttoncontainer flex jcsa" id ="buttonContainer"></div>`);
+    bodyContainer.append(`<div class = "buttoncontainer flex jcsb" id ="buttonContainer"></div>`);
     var buttonContainer = $("#buttonContainer");
-    buttonContainer.append(`<button class="retryButton button--start"id="saveButton"><span>R</span><span>e</span><span>t</span><span>r</span><span>y</span><span>?</span></button>`)
-    buttonContainer.append(`<button class="clearButton button--start"id="saveButton"><span>C</span><span>l</span><span>e</span><span>a</span><span>r</span></button>`)
+    buttonContainer.append(`<button class="retryButton button--start"id="retryButton"><span>R</span><span>e</span><span>t</span><span>r</span><span>y</span><span>?</span></button>`)
+    buttonContainer.append(`<button class="clearButton button--start"id="clearButton"><span>C</span><span>l</span><span>e</span><span>a</span><span>r</span></button>`)
 
 
 }
@@ -222,7 +244,7 @@ $("#highScoreButton").on("click", function() {
 });
 
 // click start quiz
-$("#sButton").on("click", function() {
+$("#bodyContainer").on("click", "#sButton", function() {
     // prevent accidental clickage.
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -301,6 +323,28 @@ $("#bodyContainer").on("click", "#saveButton", function() {
 });
 
 
+
+$("#bodyContainer").on("click", "#retryButton", function() {
+    clearPage();
+    renderStartPage();
+    setDefaultState();
+});
+
+
+$("#bodyContainer").on("click", "#clearButton", function() {
+        // get and parse local storage
+        var string = localStorage.getItem("highScores");
+        // check if empty.
+        if (string === null) {
+            // if so, no need to do anything
+        }
+        else {
+            // else, remove scores from local storage
+            localStorage.removeItem("highScores");
+        }
+        // re-render HS page
+        renderHighSchorePage();
+});
 
 
 

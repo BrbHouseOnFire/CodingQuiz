@@ -112,6 +112,7 @@ function runTimer() {
 }
 
 function endQuiz() {
+    // prevent negative scoring
     if (timeScore <= 0) {
         timeScore = 0;
     }
@@ -122,7 +123,7 @@ function endQuiz() {
 
 
 function nextQuestion(currentQuestion) {
-    // Set TIMEOUT to display if right or wrong. *************************************
+    // Future enhancement: Set timeout to display if right or wrong. **********
     
     // clear page and move to next question.
     clearPage();
@@ -160,7 +161,7 @@ function createAButton(questionNumber, choicesIndex) {
     if (questions[questionNumber].answer == choicesIndex) {
         correctQ = true;
     }
-    // return customized buttons
+    // return unique buttons
     return newButton = `<button class="quizButton qbutton button--quiz" selection="${choicesIndex}" id="${questionNumber},${choicesIndex}" isCorrect="${correctQ}">${buttonText}</button>`;
 }
 
@@ -221,7 +222,7 @@ function renderHighSchorePage() {
     }
     else {
         // else, display local storage results.
-        // UL to house scores
+        // OL to house scores
         bodyContainer.append(`<ol id="scoreChart" class="scoreChart"></ol>`);
         // for loop running through .length to generate and add LIs
         for(var i = 0; i < scoreChart.length; i++) {
@@ -235,17 +236,18 @@ function renderHighSchorePage() {
         }
 
     }
-
-    // display retry button
-    // display clear high scores button
+    // button container
     bodyContainer.append(`<div class = "buttoncontainer flex jcsb" id ="buttonContainer"></div>`);
     var buttonContainer = $("#buttonContainer");
+    // display retry button
     buttonContainer.append(`<button class="retryButton button--start"id="retryButton"><span>R</span><span>e</span><span>t</span><span>r</span><span>y</span><span>?</span></button>`)
+    // display clear high scores button
     buttonContainer.append(`<button class="clearButton button--start"id="clearButton"><span>C</span><span>l</span><span>e</span><span>a</span><span>r</span></button>`)
 
 
 }
 
+// for convenience
 function clearPage() {
     bodyContainer.empty();
 }
@@ -255,11 +257,13 @@ function clearPage() {
 // event functions
 // click HS
 $("#highScoreButton").on("click", function() {
-    // goto High Score Page
+    // special case to avoid breaking timer.
     timeLeft = "HS";
+    // goto High Score Page
     renderHighSchorePage();
 });
 
+// prevent default submission option on Enter keypress for form
 $("#bodyContainer").keypress(
     function(event){
       if (event.which == '13') {
@@ -295,18 +299,23 @@ $("#bodyContainer").on("click", ".quizButton", function() {
         isCorrect = false;
         if (timeLeft <= -15) {
             // Do nothing
-            // Prevent multi-button presses
+            // Prevent multi-button presses hurting their time
         }
         else {
             timeLeft -= 15;
         }
     }
+    // prep move to next question
     currentQuestion++;
+    // if there are still more questions
     if (currentQuestion < questions.length) {
+        // move on to the next question
         nextQuestion(currentQuestion);
     }
     else {
+        // save the amount of time they have left
         timeScore = timeLeft;
+        // end the timer (which also triggers endQuiz)
         timeLeft = 0;
     }
 });
@@ -314,6 +323,7 @@ $("#bodyContainer").on("click", ".quizButton", function() {
 
 $("#bodyContainer").on("click", "#saveButton", function() {
     nameInput = $("#nameInput").val();
+    // validation
     if (nameInput === "") {
         alert("A name is required for submission.");
     }
@@ -339,7 +349,7 @@ $("#bodyContainer").on("click", "#saveButton", function() {
                 score: score
                 }
             );
-            // Sorts an array of objects based on score key value
+            // Local function for sorting the array of score objects.
             function sorter(a, b){
                 var aScore = a.score;
                 var bScore = b.score;
@@ -352,13 +362,10 @@ $("#bodyContainer").on("click", "#saveButton", function() {
                 else {
                     return 0;
                 }
-                // return ((aScore < bScore) ? -1 : ((aScore > bScore) ? 1 : 0));
-
-
               }
             // sort the scores into descending order
             scoreChart.sort(sorter).reverse();
-
+            // store the scores into local storage as a string
             localStorage.setItem("highScores", JSON.stringify(scoreChart));
         }
         // Goto High Score Page
@@ -367,14 +374,14 @@ $("#bodyContainer").on("click", "#saveButton", function() {
 });
 
 
-
+// goes back to the main page and resets everything
 $("#bodyContainer").on("click", "#retryButton", function() {
     clearPage();
     renderStartPage();
     setDefaultState();
 });
 
-
+// clears scores from local storage and re-renders the HS page
 $("#bodyContainer").on("click", "#clearButton", function() {
         // get and parse local storage
         var string = localStorage.getItem("highScores");
@@ -389,11 +396,6 @@ $("#bodyContainer").on("click", "#clearButton", function() {
         // re-render HS page
         renderHighSchorePage();
 });
-
-
-
-
-// clear HS
 
 // -------------------------------------------------------------------
 
